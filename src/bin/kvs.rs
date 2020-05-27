@@ -1,42 +1,45 @@
-use clap::{App, AppSettings, Arg, SubCommand};
+use structopt::StructOpt;
 use std::process;
 
+#[derive(StructOpt, Debug)]
+#[structopt(about, author)]
+struct Opt {
+    #[structopt(subcommand)]
+    cmd: Command
+}
+
+#[derive(StructOpt, Debug)]
+enum Command {
+    #[structopt(about = "set value for key, usage: kvs set key1 value1")]
+    Set {
+        key: String,
+        value: String
+    },
+    #[structopt(about = "get value by key, usage: kvs get key1")]
+    Get {
+        key: String
+    },
+    #[structopt(about = "remove value by key, usage: kvs rm key1")]
+    Rm {
+        key: String
+    }
+}
+
 fn main() {
-    let matches = App::new(env!("CARGO_PKG_NAME"))
-        .version(env!("CARGO_PKG_VERSION"))
-        .author(env!("CARGO_PKG_AUTHORS"))
-        .about(env!("CARGO_PKG_DESCRIPTION"))
-        .setting(AppSettings::SubcommandRequiredElseHelp)
-        .subcommand(
-            SubCommand::with_name("set")
-                .about("set value for key, usage: kvs set key1 value1")
-                .arg(Arg::with_name("key").index(1))
-                .arg(Arg::with_name("value").index(2)),
-        )
-        .subcommand(
-            SubCommand::with_name("get")
-                .about("get value by key, usage: kvs get key1")
-                .arg(Arg::with_name("key").index(1)),
-        )
-        .subcommand(
-            SubCommand::with_name("rm")
-                .about("remove value by key, usage: kvs rm key1")
-                .arg(Arg::with_name("key").index(1)),
-        )
-        .get_matches();
+    let matches = Opt::clap().get_matches();
 
     if matches.is_present("set") {
-        eprintln!("sorry, unimplemented.");
+        eprintln!("Sorry, method unimplemented.");
         process::exit(1);
     }
 
     if matches.is_present("get") {
-        eprintln!("sorry, unimplemented.");
+        eprintln!("Sorry, method unimplemented.");
         process::exit(1);
     }
 
     if matches.is_present("rm") {
-        eprintln!("sorry, unimplemented.");
+        eprintln!("Sorry, method unimplemented.");
         process::exit(1);
     }
 }
