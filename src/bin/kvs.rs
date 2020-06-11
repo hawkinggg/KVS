@@ -1,5 +1,7 @@
 use structopt::StructOpt;
 use std::process;
+use std::path::PathBuf;
+use kvs::{KvStore, Result};
 
 #[derive(StructOpt, Debug)]
 #[structopt(about, author)]
@@ -25,12 +27,17 @@ enum Command {
     }
 }
 
-fn main() {
+fn main() -> Result<()> {
     let matches = Opt::clap().get_matches();
 
+    let mut store = KvStore::open(PathBuf::from("db.log").to_path_buf())?;
+
     if matches.is_present("set") {
-        eprintln!("Sorry, method unimplemented.");
-        process::exit(1);
+        let key = matches.value_of("key").unwrap();
+        let value = matches.value_of("value").unwrap();
+        store.set(key.to_string(), value.to_string()).unwrap()
+        // eprintln!("Sorry, method unimplemented.");
+        // process::exit(1);
     }
 
     if matches.is_present("get") {
@@ -42,4 +49,6 @@ fn main() {
         eprintln!("Sorry, method unimplemented.");
         process::exit(1);
     }
+
+    Ok(())
 }
