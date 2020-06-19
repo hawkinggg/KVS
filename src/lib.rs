@@ -4,10 +4,22 @@
 
 #![deny(missing_docs)]
 
+// extern crate failure;
+
 use std::collections::HashMap;
 use std::result;
 use std::path::PathBuf;
+use std::fs;
 use failure::Error;
+use failure::Fail;
+
+/// KVSError define the error type of kvs
+#[derive(Fail, Debug)]
+pub enum KVSError {
+    /// KeyNotFound means can't find key in kvs
+    #[fail(display = "Key not found")]
+    KeyNotFound,
+}
 
 /// alias for return type with error
 pub type Result<T> = result::Result<T, Error>;
@@ -16,13 +28,16 @@ pub type Result<T> = result::Result<T, Error>;
 #[derive(Default)]
 pub struct KvStore {
     store: HashMap<String, String>,
+    f: fs::File,
 }
 
 impl KvStore {
     /// Create a KvStore to store key/value pair.
     pub fn open(path: impl Into<PathBuf>) -> Result<KvStore> {
+        // f = fs::OpenOptions::new().create(true).append(true).open(path)?; 
         Ok(KvStore {
             store: HashMap::new(),
+            f: fs::OpenOptions::new().create(true).append(true).open(path)?,
         })
     }
 
@@ -51,7 +66,7 @@ impl KvStore {
     /// ```
     pub fn get(&self, key: String) -> Result<Option<String>> {
         match self.store.get(&key) {
-            None => Ok(None),
+            None => Err(KVSError::KeyNotFound)?,
             Some(v) => Ok(Some(v.clone())),
         }
     }

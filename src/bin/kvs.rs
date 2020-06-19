@@ -41,13 +41,23 @@ fn main() -> Result<()> {
     }
 
     if matches.is_present("get") {
-        eprintln!("Sorry, method unimplemented.");
-        process::exit(1);
+        let key = matches.value_of("key").unwrap();
+        match store.get(key.to_string()) {
+            Ok(v) => println!("{}",v.unwrap()),
+            Err(e) => {
+                eprintln!("{}", e);
+                process::exit(1)
+            }
+        }
+        // eprintln!("Sorry, method unimplemented.");
+        // process::exit(1);
     }
 
     if matches.is_present("rm") {
-        eprintln!("Sorry, method unimplemented.");
-        process::exit(1);
+        let key = matches.value_of("key").unwrap();
+        store.remove(key.to_string()).unwrap();
+        // eprintln!("Sorry, method unimplemented.");
+        // process::exit(1);
     }
 
     Ok(())
